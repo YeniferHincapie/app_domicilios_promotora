@@ -13,18 +13,40 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
 
+  <!-- SCRIPT DE SEGURIDAD (CONTRASEÑA DE ACCESO) -->
+  <script>
+    let storedPass = localStorage.getItem('app_auth');
+    // Puedes cambiar "Promotora2026*" por la contraseña que prefieras:
+    const APP_PASSWORD = "Promotora2026*"; 
+
+    if(storedPass !== APP_PASSWORD) {
+      let pass = prompt("🔒 Ingresa la contraseña de seguridad de la empresa:");
+      if(pass === APP_PASSWORD) {
+        localStorage.setItem('app_auth', APP_PASSWORD);
+      } else {
+        alert("Contraseña incorrecta. Acceso denegado.");
+        document.body.innerHTML = `
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; text-align:center; padding:20px;">
+            <h2 style="color:#dc2626; font-size:24px; margin-bottom:10px;">⛔ Acceso No Autorizado</h2>
+            <p style="color:#4b5563; font-size:14px;">No tienes los permisos necesarios para ver esta aplicación de Promotora.</p>
+          </div>
+        `;
+        throw new Error("Acceso denegado");
+      }
+    }
+  </script>
+
   <!-- BARRA SUPERIOR DE NAVEGACIÓN -->
   <header class="bg-emerald-700 text-white shadow-md sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-3">
         <i class="fa-solid fa-utensils text-2xl text-yellow-300"></i>
         <div>
-          <h1 class="text-xl font-bold leading-tight">Domicilios Propios Promotora Bellatrix</h1>
-          <p class="text-xs text-emerald-100">Subway</p>
+          <h1 class="text-xl font-bold leading-tight">Pedidos & Domicilios</h1>
+          <p class="text-xs text-emerald-100">Promotora - Sistema de Gestión</p>
         </div>
       </div>
       
-      <!-- ASESOR ACTIVO & CONFIGURACIÓN -->
       <div class="flex items-center space-x-3">
         <div id="advisor-badge" class="bg-emerald-800 px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-2 border border-emerald-500">
           <i class="fa-solid fa-user-circle text-sm text-yellow-300"></i>
@@ -81,7 +103,7 @@
     </div>
   </div>
 
-  <!-- MODAL PERSONALIZACIÓN DE PRODUCTO (PAN, QUESO, VEGETALES, SALSAS, SABORES) -->
+  <!-- MODAL PERSONALIZACIÓN -->
   <div id="custom-modal" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center pb-3 border-b border-gray-200 mb-4">
@@ -92,9 +114,7 @@
         <button onclick="closeCustomModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
-      <div id="custom-options-container" class="space-y-4 text-xs">
-        <!-- Generado dinámicamente según el tipo de producto -->
-      </div>
+      <div id="custom-options-container" class="space-y-4 text-xs"></div>
 
       <div class="mt-6 pt-3 border-t border-gray-200 flex justify-end gap-2">
         <button onclick="closeCustomModal()" class="px-4 py-2 border rounded-lg font-semibold text-gray-600 hover:bg-gray-50">Cancelar</button>
@@ -105,7 +125,7 @@
     </div>
   </div>
 
-  <!-- MODAL RESUMEN FINAL (COPIAR / NO ABRE WHATSAPP AUTOMÁTICO) -->
+  <!-- MODAL RESUMEN FINAL -->
   <div id="summary-modal" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6">
       <div class="flex justify-between items-center pb-3 border-b border-gray-200 mb-3">
@@ -133,7 +153,6 @@
   <!-- CONTENIDO PRINCIPAL -->
   <main class="flex-1 max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-    <!-- MENÚ Y CATÁLOGO (7 Cols) -->
     <section class="lg:col-span-7 flex flex-col gap-4">
       <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
         <div class="relative mb-3">
@@ -141,17 +160,12 @@
           <input type="text" id="search-input" onkeyup="filterMenu()" placeholder="Buscar producto o ingrediente..." class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
         </div>
 
-        <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1 text-xs" id="category-tabs">
-          <!-- Categorías Dinámicas -->
-        </div>
+        <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1 text-xs" id="category-tabs"></div>
       </div>
 
-      <div id="menu-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 overflow-y-auto max-h-[calc(100vh-250px)] pr-1">
-        <!-- Productos Dinámicos -->
-      </div>
+      <div id="menu-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 overflow-y-auto max-h-[calc(100vh-250px)] pr-1"></div>
     </section>
 
-    <!-- CARRITO Y DATOS (5 Cols) -->
     <section class="lg:col-span-5 flex flex-col gap-4">
       <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col h-full">
         
@@ -162,12 +176,10 @@
           <button onclick="clearCart()" class="text-xs text-red-500 hover:text-red-700 font-semibold">Vaciar</button>
         </div>
 
-        <!-- ITEMS CARRITO -->
         <div id="cart-items" class="flex-1 overflow-y-auto max-h-44 mb-3 divide-y divide-gray-100 pr-1">
           <p class="text-xs text-gray-400 text-center py-6">No hay productos agregados al pedido.</p>
         </div>
 
-        <!-- DATOS DEL CLIENTE -->
         <div class="border-t border-gray-200 pt-3 flex flex-col gap-2.5">
           <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Datos del Cliente y Servicio</h3>
 
@@ -181,7 +193,6 @@
             <input type="text" id="client-neighborhood" placeholder="Barrio" class="px-3 py-1.5 border rounded-lg text-xs outline-none focus:ring-1 focus:ring-emerald-500">
           </div>
 
-          <!-- MEDIO DE PAGO -->
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="block text-[10px] font-bold text-gray-500 mb-1">MEDIO DE PAGO</label>
@@ -208,7 +219,6 @@
             </div>
           </div>
 
-          <!-- COMPROBANTE TRANSFERENCIA -->
           <div id="transfer-field" class="hidden bg-blue-50 p-2 rounded-lg border border-blue-200">
             <label class="block text-[11px] font-bold text-blue-800 mb-1">
               <i class="fa-solid fa-paperclip"></i> Adjuntar Soporte de Transferencia:
@@ -217,19 +227,16 @@
             <div id="file-preview" class="hidden mt-1 text-[10px] text-blue-700 font-medium truncate"></div>
           </div>
 
-          <!-- DOMICILIO VARIABLE -->
           <div class="flex items-center justify-between bg-gray-50 p-2 rounded-lg border border-gray-200">
             <span class="text-xs font-semibold text-gray-600">Recargo Domicilio ($):</span>
             <input type="number" id="delivery-fee-input" value="4000" oninput="renderCart()" class="w-24 px-2 py-1 border rounded-lg text-xs font-bold text-right outline-none bg-white">
           </div>
 
-          <!-- OBSERVACIONES -->
           <div>
             <label class="block text-[10px] font-bold text-gray-500 mb-1">OBSERVACIONES / DETALLES</label>
-            <textarea id="order-observations" rows="2" placeholder="Ej: Entregar en portería, timbrar duro..." class="w-full px-3 py-1.5 border rounded-lg text-xs outline-none focus:ring-1 focus:ring-emerald-500 resize-none"></textarea>
+            <textarea id="order-observations" rows="2" placeholder="Ej: Entregar en portería..." class="w-full px-3 py-1.5 border rounded-lg text-xs outline-none focus:ring-1 focus:ring-emerald-500 resize-none"></textarea>
           </div>
 
-          <!-- TOTALES -->
           <div class="bg-gray-900 text-white p-3 rounded-lg flex flex-col gap-1 text-xs">
             <div class="flex justify-between">
               <span class="text-gray-400">Subtotal:</span>
@@ -255,21 +262,21 @@
   </main>
 
   <script>
+    // =======================================================
+    // CONFIGURACIÓN DE GOOGLE SHEETS (PUEDES DEJARLA AQUÍ FIJA)
+    // =======================================================
     let GOOGLE_SHEETS_SCRIPT_URL = localStorage.getItem('sheets_url') || "";
 
-    // OPCIONES DE PERSONALIZACIÓN
-    const BREAD_OPTIONS = ["Orégano", "Blanco", "Ajo y Mantequilla", "Integral", "Sin Pan (Ensalada)"];
+    const BREAD_OPTIONS = ["Orégano", "Blanco", "Ajo", "Integral", "Sin Pan (Ensalada)"];
     const CHEESE_OPTIONS = ["Americano", "Mozzarella", "Provolone", "Sin Queso"];
-    const VEGGIE_OPTIONS = ["Lechuga", "Tomate", "Pepino", "Pepinillos", "Cebolla", "Aceitunas", "Jalapeños", "Pimentón"];
-    const SAUCE_OPTIONS = ["Mayonesa", "Mostaza", "Chipotle", "BBQ", "Miel Mostaza", "Marinara", "Ajo","Cebolla dulce","Rosada","Alioli", "Sin Salsa"];
+    const VEGGIE_OPTIONS = ["Lechuga", "Tomate", "Pepino", "Pepinillos", "Cebolla", "Aceitunas", "Jalapeños", "Pimentón", "Maíz"];
+    const SAUCE_OPTIONS = ["Mayonesa", "Mostaza", "Chipotle", "BBQ", "Miel Mostaza", "Marianara", "Ajo", "Sweet Onion", "Sin Salsa"];
 
-    const DRINK_FLAVORS = ["Pepsi","Pepsi Cero","Z-UP", "Colombiana", "Manzana", "Té Limón", "Té Durazno","Agua con Gas", "Agua Sin Gas","H2O","Uva"];
-    const COOKIE_FLAVORS = ["Chispas de Chocolate", "Macadamia", "Frambuesa", "Doble Chocolate","Temporada"];
-    const POTATO_OPTIONS = ["Natural", "Pollo", "BBQ","Limón","Doritos","Tomate"];
+    const DRINK_FLAVORS = ["Pepsi", "Z-UP", "Manzana", "Colombiana", "Té Limón", "Té Durazno", "Agua con Gas", "Agua Sin Gas"];
+    const COOKIE_FLAVORS = ["Chispas de Chocolate", "Macadamia", "Avena y Pasas", "Doble Chocolate"];
+    const POTATO_OPTIONS = ["Natural", "Tomate", "Limón"];
 
-    // BASE DE DATOS DE MENÚ COMPLETA
     const MENU_DATA = [
-      // SANDWICH 15 CM
       { category: "Sandwich 15 cm", name: "Jamon 15 cm", price: 18100, type: "sub" },
       { category: "Sandwich 15 cm", name: "Vegetariano 15 cm", price: 17400, type: "sub" },
       { category: "Sandwich 15 cm", name: "Pavo Jamon 15 cm", price: 18500, type: "sub" },
@@ -291,9 +298,8 @@
       { category: "Sandwich 15 cm", name: "Tripleta 15cm", price: 23200, type: "sub" },
       { category: "Sandwich 15 cm", name: "Shaved Steak 15 cm", price: 24200, type: "sub" },
       { category: "Sandwich 15 cm", name: "Perril de Cerdo 15 cm", price: 22200, type: "sub" },
-      
+      { category: "Sandwich 15 cm", name: "Fishway 15 cm", price: 15500, type: "sub" },
 
-      // SANDWICH 30 CM
       { category: "Sandwich 30 cm", name: "Jamon 30 cm", price: 31900, type: "sub" },
       { category: "Sandwich 30 cm", name: "Vegetariano 30 cm", price: 30900, type: "sub" },
       { category: "Sandwich 30 cm", name: "Pavo Jamon 30 cm", price: 31900, type: "sub" },
@@ -316,7 +322,6 @@
       { category: "Sandwich 30 cm", name: "Shaved Steak 30 cm", price: 37500, type: "sub" },
       { category: "Sandwich 30 cm", name: "Perril de Cerdo 30 cm", price: 35900, type: "sub" },
 
-      // VARIOS / ACOMPAÑANTES
       { category: "Varios", name: "GALLETA (X1)", price: 4500, type: "cookie" },
       { category: "Varios", name: "GALLETAS (X3)", price: 12500, type: "cookie" },
       { category: "Varios", name: "GALLETAS (X12)", price: 48000, type: "cookie" },
@@ -324,15 +329,14 @@
       { category: "Varios", name: "YUCA", price: 7200, type: "side" },
       { category: "Varios", name: "PAPITAS", price: 4500, type: "side" },
 
-      // BEBIDAS
       { category: "Bebidas", name: "BEBIDA 16OZ", price: 5900, type: "drink" },
       { category: "Bebidas", name: "BEBIDA 21OZ", price: 6500, type: "drink" },
       { category: "Bebidas", name: "BEBIDA 32OZ", price: 8500, type: "drink" },
       { category: "Bebidas", name: "PET 400", price: 6200, type: "drink" },
       { category: "Bebidas", name: "TE 500", price: 6200, type: "drink" },
       { category: "Bebidas", name: "AGUA NATURAL", price: 5000, type: "simple" },
+      { category: "Bebidas", name: "SODA HATSU", price: 6100, type: "drink" },
 
-      // COMBOS
       { category: "Combos", name: "COMBO 16OZ + PAPAS", price: 6500, type: "drink_side" },
       { category: "Combos", name: "COMBO 16OZ + GALLETA", price: 6500, type: "drink_cookie" },
       { category: "Combos", name: "COMBO 16OZ + PAPA CASCO", price: 8100, type: "drink_side" },
@@ -341,7 +345,6 @@
       { category: "Combos", name: "PET 400 + PAPITA", price: 7500, type: "drink_side" },
       { category: "Combos", name: "PET 400 + GALLETA", price: 7500, type: "drink_cookie" },
 
-      // ADICIONES
       { category: "Adiciones", name: "Ad Atun", price: 7000, type: "simple" },
       { category: "Adiciones", name: "Ad Apanado", price: 7000, type: "simple" },
       { category: "Adiciones", name: "Ad BMT", price: 7000, type: "simple" },
@@ -350,24 +353,17 @@
       { category: "Adiciones", name: "Ad Queso", price: 4500, type: "simple" },
       { category: "Adiciones", name: "Ad Guacamole", price: 4500, type: "simple" },
       { category: "Adiciones", name: "Ad Tocino", price: 4500, type: "simple" },
-      { category: "Adiciones", name: "Maiz", price: 4500, type: "simple" },
-      { category: "Adiciones", name: "Cebolla Crispy", price: 4500, type: "simple" },
-      { category: "Adiciones", name: "Peperoni", price: 4500, type: "simple" },
-      { category: "Adiciones", name: "Salami", price: 4500, type: "simple" },
 
-      // DESAYUNOS
       { category: "Desayunos", name: "Sd Huevo Queso 15 cm", price: 11900, type: "sub" },
       { category: "Desayunos", name: "Sd Huevo Jamon 15 cm", price: 12400, type: "sub" },
       { category: "Desayunos", name: "Sd Huevo Tocino 15 cm", price: 13500, type: "sub" },
       { category: "Desayunos", name: "Sd Huevo Pavo 15 cm", price: 13500, type: "sub" },
 
-      // ENSALADAS
       { category: "Ensaladas", name: "Ens Atun", price: 24100, type: "sub" },
       { category: "Ensaladas", name: "Ens Apanado", price: 21500, type: "sub" },
       { category: "Ensaladas", name: "Ens BMT", price: 24100, type: "sub" },
       { category: "Ensaladas", name: "Ens Pollo Rostizado", price: 26200, type: "sub" },
 
-      // PROMOCIONES
       { category: "Promociones", name: "DUO DEL DIA", price: 18900, type: "sub" },
       { category: "Promociones", name: "COMBO DEL DIA", price: 23800, type: "sub" },
       { category: "Promociones", name: "COMBO COMPARTIR", price: 39900, type: "sub" }
@@ -463,7 +459,6 @@
 
     function filterMenu() { renderMenu(); }
 
-    // MODAL DE PERSONALIZACIÓN
     function openCustomizationModal(productName) {
       const item = MENU_DATA.find(i => i.name === productName);
       if(!item) return;
@@ -549,9 +544,9 @@
         if(item.type === "drink_side") {
           optionsHTML += `
             <div class="mt-3">
-              <label class="block font-bold text-gray-700 mb-1">ACOMPAÑANTE:</label>
-              <select id="custom-side-type" class="w-full p-2 border rounded-lg outline-none">
-                ${POTATO_OPTIONS.map(side => `<option value="${side}">${side}</option>`).join('')}
+              <label class="block font-bold text-gray-700 mb-1">SABOR DE PAPITAS:</label>
+              <select id="custom-potato-flavor" class="w-full p-2 border rounded-lg outline-none">
+                ${POTATO_OPTIONS.map(potato => `<option value="${potato}">${potato}</option>`).join('')}
               </select>
             </div>
           `;
@@ -564,6 +559,15 @@
             <label class="block font-bold text-gray-700 mb-1">SABOR DE LA GALLETA:</label>
             <select id="custom-cookie-flavor" class="w-full p-2 border rounded-lg outline-none">
               ${COOKIE_FLAVORS.map(flavor => `<option value="${flavor}">${flavor}</option>`).join('')}
+            </select>
+          </div>
+        `;
+      } else if(item.type === "side") {
+        container.innerHTML = `
+          <div>
+            <label class="block font-bold text-gray-700 mb-1">SABOR DE LAS PAPITAS:</label>
+            <select id="custom-potato-flavor" class="w-full p-2 border rounded-lg outline-none">
+              ${POTATO_OPTIONS.map(potato => `<option value="${potato}">${potato}</option>`).join('')}
             </select>
           </div>
         `;
@@ -588,7 +592,6 @@
       if(selectedItemForCustom.type === "sub") {
         const bread = document.querySelector('input[name="custom-bread"]:checked')?.value || "Estándar";
         const cheese = document.querySelector('input[name="custom-cheese"]:checked')?.value || "Sin Queso";
-        
         const veggies = Array.from(document.querySelectorAll('input[name="custom-veggie"]:checked')).map(cb => cb.value);
         const sauces = Array.from(document.querySelectorAll('input[name="custom-sauce"]:checked')).map(cb => cb.value);
 
@@ -597,14 +600,14 @@
         customDetails.push(`Veg: ${veggies.length > 0 ? veggies.join(', ') : 'Sin vegetales'}`);
         customDetails.push(`Salsas: ${sauces.length > 0 ? sauces.join(', ') : 'Sin salsas'}`);
 
-      } else if(selectedItemForCustom.type.includes("drink") || selectedItemForCustom.type.includes("cookie")) {
+      } else {
         const drinkFlavor = document.getElementById('custom-drink-flavor')?.value;
         const cookieFlavor = document.getElementById('custom-cookie-flavor')?.value;
-        const sideType = document.getElementById('custom-side-type')?.value;
+        const potatoFlavor = document.getElementById('custom-potato-flavor')?.value;
 
         if(drinkFlavor) customDetails.push(`Bebida: ${drinkFlavor}`);
         if(cookieFlavor) customDetails.push(`Galleta: ${cookieFlavor}`);
-        if(sideType) customDetails.push(`Lado: ${sideType}`);
+        if(potatoFlavor) customDetails.push(`Sabor Papitas: ${potatoFlavor}`);
       }
 
       const customString = customDetails.join(' | ');
@@ -612,7 +615,6 @@
       closeCustomModal();
     }
 
-    // CARRITO DE COMPRAS
     function addToCart(name, price, customization) {
       const existing = cart.find(i => i.name === name && i.customization === customization);
       if(existing) {
@@ -695,9 +697,7 @@
       reader.readAsDataURL(file);
     }
 
-    function closeSummaryModal() {
-      document.getElementById('summary-modal').classList.add('hidden');
-    }
+    function closeSummaryModal() { document.getElementById('summary-modal').classList.add('hidden'); }
 
     function copySummaryText() {
       const textarea = document.getElementById('summary-textarea');
@@ -719,11 +719,9 @@
     function openWhatsAppOptional() {
       if(!lastGeneratedWhatsappPhone) return alert('No hay teléfono registrado.');
       const text = document.getElementById('summary-textarea').value;
-      const encodedText = encodeURIComponent(text);
-      window.open(`https://wa.me/57${lastGeneratedWhatsappPhone}?text=${encodedText}`, '_blank');
+      window.open(`https://wa.me/57${lastGeneratedWhatsappPhone}?text=${encodeURIComponent(text)}`, '_blank');
     }
 
-    // REGISTRAR PEDIDO
     async function processOrder() {
       const advisor = localStorage.getItem('current_advisor');
       if(!advisor) return alert('Debes seleccionar un asesor para continuar.');
@@ -766,12 +764,10 @@
         transferProof: base64TransferProof || "N/A"
       };
 
-      // 1. Guardar en LocalStorage
       const history = JSON.parse(localStorage.getItem('orders_history') || '[]');
       history.unshift(orderPayload);
       localStorage.setItem('orders_history', JSON.stringify(history));
 
-      // 2. Guardar en Google Sheets
       if(GOOGLE_SHEETS_SCRIPT_URL) {
         try {
           fetch(GOOGLE_SHEETS_SCRIPT_URL, {
@@ -785,8 +781,7 @@
         }
       }
 
-      // 3. Generar texto de resumen estructurado
-      const pqrLink = `https://forms.gle/hzuoB2RvZv9TV2FeA pedido=${orderId}`;
+      const pqrLink = `https://forms.gle/pqr_ejemplo?pedido=${orderId}`;
       let summaryText = `*NUEVO PEDIDO DE DOMICILIO - ${orderId}*\n`;
       summaryText += `Atendido por: ${advisor}\n`;
       summaryText += `----------------------------------\n`;
@@ -821,22 +816,5 @@
       document.getElementById('order-observations').value = '';
     }
   </script>
-    // =======================================================
-    // 🔒 CONTROL DE SEGURIDAD (CONTRASEÑA DE ACCESO)
-    // =======================================================
-    let storedPass = localStorage.getItem('app_auth');
-    // Cambia "Promo2026*" por la contraseña que tú desees:
-    if(storedPass !== "Promotora2026*") {
-      let pass = prompt("🔒 Ingresa la contraseña de seguridad de la empresa:");
-      if(pass === "Promotora2026*") {
-        localStorage.setItem('app_auth', "true");
-      } else {
-        alert("Contraseña incorrecta. Acceso denegado.");
-        document.body.innerHTML = "<h2 style='text-align:center; margin-top:100px; font-family:sans-serif; color:red;'>⛔ Acceso No Autorizado</h2><p style='text-align:center; font-family:sans-serif;'>No tienes permisos para ver esta aplicación.</p>";
-        throw new Error("Acceso denegado"); // Detiene la ejecución de la app
-      }
-    }
-// CONFIGURACIÓN DE GOOGLE SHEETS
-    let GOOGLE_SHEETS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPZ_R8T5ddD0woDvtVEaBu3Hc9Js-0oWxVnUslv_7T_bYVnb8c6KHuF51F963FGaDX/exec";
 </body>
 </html>
